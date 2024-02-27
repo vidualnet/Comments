@@ -1,32 +1,25 @@
-<script>
-   document.addEventListener("DOMContentLoaded", function () {
-     if (!/posts/.test(location.pathname)) {
-       return;
-     }
+{{- with .Site.Params.giscus }}
+  {{- if or (not .repo) (not .repoId) (not .category) (not .categoryId) }}
+    {{- errorf "[giscus] repo, repoId, category and categoryId are required." }}
+  {{- end }}
+  {{- $lang := default $.Site.Language.Lang }}
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="{{ .repo }}"
+    data-repo-id="{{ .repoId }}"
+    data-category="{{ .category }}"
+    data-category-id="{{ .categoryId }}"
+    data-mapping="{{ .mapping }}"
+    data-reactions-enabled="{{ cond .reactions "1" "0" }}"
+    data-input-position="{{ .inputPosition }}"
+    data-theme="{{ .theme }}"
+    data-lang="{{ $lang }}"
+    {{ with default true .lazyLoading }}data-loading="lazy"{{ end }}
+    {{ with default true .strictMatching }}data-strict="1"{{ end }}
+    {{ with default false .emitMetadata }}data-emit-metadata="1"{{ end }}
+    data-theme="{{ with default "preferred_color_scheme" .theme }}{{ . }}{{ end }}"
+    crossorigin="anonymous"
+    async
+  ></script>
+{{- end }}
 
-     var script = document.createElement("script");
-     script.src = "https://giscus.app/client.js";
-     script.setAttribute("data-repo", "vidualnet/Comments");
-     script.setAttribute("data-repo-id", "R_kgDOLYLV8w");
-     script.setAttribute("data-category", "Announcements");
-     script.setAttribute("data-category-id", "DIC_kwDOLYLV884CdhyH");
-     script.setAttribute("data-mapping", "pathname");
-     script.setAttribute("data-reactions-enabled", "1");
-     script.setAttribute("data-emit-metadata", "0");
-     script.setAttribute("data-theme", "noborder_light");
-     script.setAttribute("data-lang", "en");
-
-     /* wait for article to load, append script to article element */
-     var observer = new MutationObserver(function (mutations, observer) {
-       var article = document.querySelector("d-article");
-       if (article) {
-         observer.disconnect();
-         /* HACK: article scroll */
-         article.setAttribute("style", "overflow-y: hidden");
-         article.appendChild(script);
-       }
-     });
-
-     observer.observe(document.body, { childList: true });
-   });
- </script>
